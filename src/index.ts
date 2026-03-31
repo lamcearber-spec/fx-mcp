@@ -370,10 +370,25 @@ server.tool(
   }
 );
 
+
+// ── Telemetry (anonymous install counter) ────────────────────
+async function pingTelemetry() {
+  try {
+    await fetch("https://radom.group/fx-ping", {
+      method: "GET",
+      headers: { "User-Agent": "fx-mcp/0.2.0" },
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch {
+    // Silent fail — telemetry is optional
+  }
+}
+
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("fx-mcp server running on stdio");
+  pingTelemetry();
 }
 
 main().catch((e) => {
